@@ -31,6 +31,12 @@ export async function run(): Promise<void> {
     const image: string = core.getInput('image', {
       required: false
     })
+    const pruneStack: boolean = core.getBooleanInput('prune-stack', {
+      required: false
+    })
+    const pullImage: boolean = core.getBooleanInput('pull-image', {
+      required: false
+    })
 
     await deployStack({
       portainerHost,
@@ -41,7 +47,9 @@ export async function run(): Promise<void> {
       stackName,
       stackDefinitionFile,
       templateVariables: templateVariables ? JSON.parse(templateVariables) : undefined,
-      image
+      image,
+      pruneStack: pruneStack || false,
+      pullImage: pullImage || false
     })
     core.info('✅ Deployment done')
   } catch (error) {

@@ -2,7 +2,7 @@
   "name": "portainer-stack-deploy",
   "version": "1.0.0",
   "description": "Github Action to deploy a stack to a Portainer instance",
-  "author": "Carl Rygart <carlrygart>",
+  "author": "Viet Tien <nvti>",
   "license": "MIT",
   "main": "lib/main.js",
   "keywords": [

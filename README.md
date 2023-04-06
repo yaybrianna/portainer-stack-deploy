@@ -8,6 +8,8 @@ Portainer-stack-deploy is a GitHub Action for deploying a newly updated stack to
 
 **Currently works on Portainer API v2.**
 
+**This repo is a fork of [carlrygart/portainer-stack-deploy](https://github.com/carlrygart/portainer-stack-deploy) with some minor changes.**
+
 ## Action Inputs
 
 | Input              | Description                                                                                                                                                                  | Default      |
@@ -21,6 +23,8 @@ Portainer-stack-deploy is a GitHub Action for deploying a newly updated stack to
 | stack-definition   | The path to the docker-compose stack stack definition file from repo root, eg. `stack-definition.yml`                                                                        | **Required** |
 | template-variables | If given, these variables will be replaced in docker-compose file by handlebars                                                                                              |              |
 | image              | The URI of the container image to insert into the stack definition, eg. `ghcr.io/username/repo:sha-676cae2`. Will use existing image inside stack definition if not provided |              |
+| prune-stack        | If set to `true`, the action will remove any services that are not defined in the stack definition.                                                                          | false        |
+| pull-image         | If set to `true`, the action will pull the image before deploying the stack.                                                                                                 | false        |
 
 ## Example
 
@@ -81,6 +85,8 @@ jobs:
           stack-definition: 'stack-definition.yml'
           template-variables: '{"username": "MrCool"}'
           image: ${{ env.DOCKER_IMAGE_URI }}:${{ env.IMAGE_TAG }}
+          prune-stack: true
+          pull-image: true
 ```
 
 The `stack-definition.yml` file would be placed in the root of the repository and might look something like this:

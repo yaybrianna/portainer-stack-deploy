@@ -107,7 +107,7 @@ function generateNewStackDefinition(stackDefinitionFile, templateVariables, imag
     core.info(`Inserting image ${image} into the stack definition`);
     return stackDefinition.replace(new RegExp(`${imageWithoutTag}(:.*)?\n`), `${image}\n`);
 }
-async function deployStack({ portainerHost, username, password, swarmId, endpointId, stackName, stackDefinitionFile, templateVariables, image }) {
+async function deployStack({ portainerHost, username, password, swarmId, endpointId, stackName, stackDefinitionFile, templateVariables, image, pruneStack, pullImage }) {
     const portainerApi = new api_1.PortainerApi(portainerHost);
     const stackDefinitionToDeploy = generateNewStackDefinition(stackDefinitionFile, templateVariables, image);
     core.debug(stackDefinitionToDeploy);
@@ -126,7 +126,9 @@ async function deployStack({ portainerHost, username, password, swarmId, endpoin
                 endpointId: existingStack.EndpointId
             }, {
                 env: existingStack.Env,
-                stackFileContent: stackDefinitionToDeploy
+                stackFileContent: stackDefinitionToDeploy,
+                prune: pruneStack,
+                pullImage: pullImage
             });
             core.info('Successfully updated existing stack');
         }
@@ -223,6 +225,12 @@ async function run() {
         const image = core.getInput('image', {
             required: false
         });
+        const pruneStack = core.getBooleanInput('prune-stack', {
+            required: false
+        });
+        const pullImage = core.getBooleanInput('pull-image', {
+            required: false
+        });
         await (0, deployStack_1.deployStack)({
             portainerHost,
             username,
@@ -232,7 +240,9 @@ async function run() {
             stackName,
             stackDefinitionFile,
             templateVariables: templateVariables ? JSON.parse(templateVariables) : undefined,
-            image
+            image,
+            pruneStack: pruneStack || false,
+            pullImage: pullImage || false
         });
         core.info('✅ Deployment done');
     }
