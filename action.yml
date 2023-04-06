@@ -1,4 +1,4 @@
-name: "Deploy a Portainer stack"
+name: "Deploy a stack to Portainer"
 description: "Github Action to deploy a stack to a Portainer instance"
 author: "Viet Tien <nvti>"
 branding:
