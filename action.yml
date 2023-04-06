@@ -33,10 +33,10 @@ inputs:
   image:
     required: false
     description: "The URI of the container image to insert into the stack definition, eg. docker.pkg.github.com/username/repo/master"
-  pruneStack:
+  prune-stack:
     required: false
     description: "If true, the stack will be pruned before deployment"
-  pullImage:
+  pull-image:
     required: false
     description: "If true, the image will be pulled before deployment"
 
