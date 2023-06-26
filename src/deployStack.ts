@@ -11,11 +11,11 @@ type DeployStack = {
   swarmId?: string
   endpointId: number
   stackName: string
-  stackDefinitionFile: string
+  stackDefinitionFile?: string
   templateVariables?: object
   image?: string
-  pruneStack: boolean
-  pullImage: boolean
+  pruneStack?: boolean
+  pullImage?: boolean
 }
 
 enum StackType {
@@ -24,10 +24,15 @@ enum StackType {
 }
 
 function generateNewStackDefinition(
-  stackDefinitionFile: string,
+  stackDefinitionFile?: string,
   templateVariables?: object,
   image?: string
-): string {
+): string | undefined {
+  if (!stackDefinitionFile) {
+    core.info(`No stack definition file provided. Will not update stack definition.`)
+    return undefined
+  }
+
   const stackDefFilePath = path.join(process.env.GITHUB_WORKSPACE as string, stackDefinitionFile)
   core.info(`Reading stack definition file from ${stackDefFilePath}`)
   let stackDefinition = fs.readFileSync(stackDefFilePath, 'utf8')
@@ -70,7 +75,7 @@ export async function deployStack({
     templateVariables,
     image
   )
-  core.debug(stackDefinitionToDeploy)
+  if (stackDefinitionToDeploy) core.debug(stackDefinitionToDeploy)
 
   core.info('Logging in to Portainer instance...')
   await portainerApi.login({
@@ -93,12 +98,17 @@ export async function deployStack({
         {
           env: existingStack.Env,
           stackFileContent: stackDefinitionToDeploy,
-          prune: pruneStack,
-          pullImage: pullImage
+          prune: pruneStack ?? false,
+          pullImage: pullImage ?? false
         }
       )
       core.info('Successfully updated existing stack')
     } else {
+      if (!stackDefinitionToDeploy) {
+        throw new Error(
+          `Stack with name ${stackName} does not exist and no stack definition file was provided.`
+        )
+      }
       core.info('Deploying new stack...')
       await portainerApi.createStack(
         {

@@ -19,7 +19,7 @@ type CreateStackBody = { name: string; stackFileContent: string; swarmID?: strin
 type UpdateStackParams = { endpointId: EndpointId }
 type UpdateStackBody = {
   env: EnvVariables
-  stackFileContent: string
+  stackFileContent?: string
   prune: boolean
   pullImage: boolean
 }

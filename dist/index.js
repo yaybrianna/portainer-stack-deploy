@@ -89,6 +89,10 @@ var StackType;
     StackType[StackType["COMPOSE"] = 2] = "COMPOSE";
 })(StackType || (StackType = {}));
 function generateNewStackDefinition(stackDefinitionFile, templateVariables, image) {
+    if (!stackDefinitionFile) {
+        core.info(`No stack definition file provided. Will not update stack definition.`);
+        return undefined;
+    }
     const stackDefFilePath = path_1.default.join(process.env.GITHUB_WORKSPACE, stackDefinitionFile);
     core.info(`Reading stack definition file from ${stackDefFilePath}`);
     let stackDefinition = fs_1.default.readFileSync(stackDefFilePath, 'utf8');
@@ -110,7 +114,8 @@ function generateNewStackDefinition(stackDefinitionFile, templateVariables, imag
 async function deployStack({ portainerHost, username, password, swarmId, endpointId, stackName, stackDefinitionFile, templateVariables, image, pruneStack, pullImage }) {
     const portainerApi = new api_1.PortainerApi(portainerHost);
     const stackDefinitionToDeploy = generateNewStackDefinition(stackDefinitionFile, templateVariables, image);
-    core.debug(stackDefinitionToDeploy);
+    if (stackDefinitionToDeploy)
+        core.debug(stackDefinitionToDeploy);
     core.info('Logging in to Portainer instance...');
     await portainerApi.login({
         username,
@@ -127,12 +132,15 @@ async function deployStack({ portainerHost, username, password, swarmId, endpoin
             }, {
                 env: existingStack.Env,
                 stackFileContent: stackDefinitionToDeploy,
-                prune: pruneStack,
-                pullImage: pullImage
+                prune: pruneStack !== null && pruneStack !== void 0 ? pruneStack : false,
+                pullImage: pullImage !== null && pullImage !== void 0 ? pullImage : false
             });
             core.info('Successfully updated existing stack');
         }
         else {
+            if (!stackDefinitionToDeploy) {
+                throw new Error(`Stack with name ${stackName} does not exist and no stack definition file was provided.`);
+            }
             core.info('Deploying new stack...');
             await portainerApi.createStack({
                 type: swarmId ? StackType.SWARM : StackType.COMPOSE,
@@ -217,7 +225,7 @@ async function run() {
             required: true
         });
         const stackDefinitionFile = core.getInput('stack-definition', {
-            required: true
+            required: false
         });
         const templateVariables = core.getInput('template-variables', {
             required: false
@@ -238,7 +246,7 @@ async function run() {
             swarmId,
             endpointId: parseInt(endpointId) || 1,
             stackName,
-            stackDefinitionFile,
+            stackDefinitionFile: stackDefinitionFile !== null && stackDefinitionFile !== void 0 ? stackDefinitionFile : undefined,
             templateVariables: templateVariables ? JSON.parse(templateVariables) : undefined,
             image,
             pruneStack: pruneStack || false,

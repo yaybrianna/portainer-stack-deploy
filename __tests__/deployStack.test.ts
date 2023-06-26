@@ -96,6 +96,8 @@ describe('deployStack', () => {
       .matchHeader('authorization', 'Bearer token')
       .matchHeader('content-type', 'application/json')
       .put('/stacks/2', {
+        prune: false,
+        pullImage: false,
         stackFileContent:
           "version: '3.7'\n\nservices:\n  server:\n    image: ghcr.io/username/repo:sha-0142c14\n    deploy:\n      update_config:\n        order: start-first\n"
       })
@@ -123,6 +125,8 @@ describe('deployStack', () => {
       .matchHeader('content-type', 'application/json')
       .put('/stacks/3', {
         env: [{ name: 'keyName', value: 'value1' }],
+        prune: false,
+        pullImage: false,
         stackFileContent:
           "version: '3.7'\n\nservices:\n  server:\n    image: ghcr.io/username/repo:sha-0142c14\n    deploy:\n      update_config:\n        order: start-first\n"
       })

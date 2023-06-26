@@ -25,7 +25,7 @@ inputs:
     required: true
     description: "Name for the Portainer stack"
   stack-definition:
-    required: true
+    required: false
     description: "The path to the docker-compose stack stack definition file, eg. stack-definition.yml"
   template-variables:
     required: false
