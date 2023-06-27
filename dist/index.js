@@ -257,7 +257,7 @@ async function run() {
     catch (error) {
         if (axios_1.default.isAxiosError(error) && error.response) {
             const { status, data, config: { url, method } } = error.response;
-            return core.setFailed(`AxiosError HTTP Status ${status} (${method} ${url}): ${data}`);
+            return core.setFailed(`AxiosError HTTP Status ${status} (${method} ${url}): ${JSON.stringify(data, null, 2)}`);
         }
         return core.setFailed(error);
     }
