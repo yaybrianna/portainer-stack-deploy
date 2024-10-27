@@ -41,5 +41,5 @@ inputs:
     description: "If true, the image will be pulled before deployment"
 
 runs:
-  using: "node16"
+  using: "node20"
   main: "dist/index.js"
