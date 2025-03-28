@@ -36,6 +36,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PortainerApi = void 0;
 const axios_1 = __importDefault(__nccwpck_require__(8757));
 const core = __importStar(__nccwpck_require__(2186));
+const deployStack_1 = __nccwpck_require__(2090);
 class PortainerApi {
     constructor(host) {
         this.axiosInstance = axios_1.default.create({
@@ -63,7 +64,7 @@ class PortainerApi {
         return data;
     }
     async createStack(params, body) {
-        await this.axiosInstance.post('/stacks', body, { params });
+        await this.axiosInstance.post(`/stacks/create/${params.type === deployStack_1.StackType.SWARM ? "swarm" : "standalone"}/${params.method}`, body, { params });
     }
     async updateStack(id, params, body) {
         await this.axiosInstance.put(`/stacks/${id}`, body, { params });
@@ -106,6 +107,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.StackType = void 0;
 exports.deployStack = deployStack;
 const api_1 = __nccwpck_require__(8947);
 const path_1 = __importDefault(__nccwpck_require__(1017));
@@ -116,7 +118,7 @@ var StackType;
 (function (StackType) {
     StackType[StackType["SWARM"] = 1] = "SWARM";
     StackType[StackType["COMPOSE"] = 2] = "COMPOSE";
-})(StackType || (StackType = {}));
+})(StackType || (exports.StackType = StackType = {}));
 function generateNewStackDefinition(stackDefinitionFile, templateVariables, image) {
     if (!stackDefinitionFile) {
         core.info(`No stack definition file provided. Will not update stack definition.`);
@@ -176,6 +178,7 @@ async function deployStack({ portainerHost, username, password, swarmId, endpoin
                 method: 'string',
                 endpointId
             }, {
+                fromAppTemplate: false,
                 name: stackName,
                 stackFileContent: stackDefinitionToDeploy,
                 swarmID: swarmId ? swarmId : undefined

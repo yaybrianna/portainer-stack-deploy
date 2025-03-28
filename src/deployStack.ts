@@ -18,7 +18,7 @@ type DeployStack = {
   pullImage?: boolean
 }
 
-enum StackType {
+export enum StackType {
   SWARM = 1,
   COMPOSE = 2
 }
@@ -117,6 +117,7 @@ export async function deployStack({
           endpointId
         },
         {
+          fromAppTemplate: false,
           name: stackName,
           stackFileContent: stackDefinitionToDeploy,
           swarmID: swarmId ? swarmId : undefined

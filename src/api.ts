@@ -1,5 +1,6 @@
 import axios from 'axios'
 import * as core from '@actions/core'
+import { StackType } from './deployStack'
 
 type EnvVariables = Array<{
   name: string
@@ -15,8 +16,8 @@ type StackData = {
   Env: EnvVariables
 }
 
-type CreateStackParams = { type: number; method: string; endpointId: EndpointId }
-type CreateStackBody = { name: string; stackFileContent: string; swarmID?: string }
+type CreateStackParams = { type: StackType; method: string; endpointId: EndpointId }
+type CreateStackBody = { fromAppTemplate: boolean, name: string; stackFileContent: string; swarmID?: string }
 type UpdateStackParams = { endpointId: EndpointId }
 type UpdateStackBody = {
   env: EnvVariables
@@ -57,7 +58,7 @@ export class PortainerApi {
   }
 
   async createStack(params: CreateStackParams, body: CreateStackBody): Promise<void> {
-    await this.axiosInstance.post('/stacks', body, { params })
+    await this.axiosInstance.post(`/stacks/create/${params.type === StackType.SWARM ? "swarm": "standalone"}/${params.method}`, body, { params })
   }
 
   async updateStack(id: number, params: UpdateStackParams, body: UpdateStackBody): Promise<void> {
